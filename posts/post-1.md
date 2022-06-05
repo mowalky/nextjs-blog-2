@@ -1,8 +1,8 @@
 ---
-title: Getting Started with NextJS
+title: Getting Started with NextJS!
 date: "2022-10-14"
 image: "yoda.jpg"
-excerpt: ethis
+excerpt: Learning NextJS to build this blog!
 isFeatured: true
 ---
 

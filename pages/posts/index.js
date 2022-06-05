@@ -1,26 +1,18 @@
 import AllPosts from "../../components/posts/all-posts";
 
-const DUMMY_DATA = [
-  {
-    slug: "post-1",
-    title: "Post 1",
-    date: "2020-01-01",
-    excerpt:
-      "NextJS is the best framework for building server side applications",
-    image: "yoda.jpg",
-  },
-  {
-    slug: "post-2",
-    title: "Post 1",
-    date: "2020-01-01",
-    excerpt:
-      "NextJS is the best framework for building server side applications",
-    image: "r2d2.jpg",
-  },
-];
+import { getAllPosts } from "../../lib/posts-util";
 
-function AllPostsPage() {
-  return <AllPosts posts={DUMMY_DATA} />;
+function AllPostsPage(props) {
+  return <AllPosts posts={props.posts} />;
+}
+
+export function getStaticProps() {
+  const allPosts = getAllPosts();
+  return {
+    props: {
+      posts: allPosts,
+    },
+  };
 }
 
 export default AllPostsPage;
