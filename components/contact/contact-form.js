@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import classes from "./contact-form.module.css";
 
@@ -24,6 +24,16 @@ function ContactForm() {
   const [requestStatus, setRequestStatus] = useState(""); // pending, success, error
   const [requestError, setRequestError] = useState("");
 
+  useEffect(() => {
+    if (requestStatus === "pending" || requestStatus === "error") {
+      const timer = setTimeout(() => {
+        setRequestStatus("");
+        setRequestError("");
+      }, 3000);
+      return () => clearTimeout(timer); // clean up
+    }
+  }, [requestStatus]);
+
   async function sendMessageHandler(event) {
     event.preventDefault();
     setRequestStatus("pending");
@@ -34,6 +44,9 @@ function ContactForm() {
         message: enteredMessage,
       });
       setRequestStatus("success");
+      setEnteredEmail("");
+      setEnteredMessage("");
+      setEnteredName("");
     } catch (error) {
       setRequestError(error.message);
       setRequestStatus("error");
@@ -45,9 +58,8 @@ function ContactForm() {
   if (requestStatus === "success") {
     notification = {
       status: "success",
-      title: "Message sent",
-      message:
-        "Thank you for your message. We will get back to you as soon as possible.",
+      title: "Success!",
+      message: "Message sent succesfully!",
     };
   }
 
@@ -62,8 +74,8 @@ function ContactForm() {
   if (requestStatus === "pending") {
     notification = {
       status: "pending",
-      title: "Sending message",
-      message: "Please wait while we send your message.",
+      title: "Pending",
+      message: "Sending message...",
     };
   }
 
@@ -106,6 +118,7 @@ function ContactForm() {
           <button>Send Message</button>
         </div>
       </form>
+      {notification && <Notification {...notification} />}
     </section>
   );
 }
