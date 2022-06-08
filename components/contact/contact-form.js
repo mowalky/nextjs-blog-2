@@ -2,24 +2,69 @@ import { useState } from "react";
 
 import classes from "./contact-form.module.css";
 
+import Notification from "../ui/notification";
+
+async function setContactData(contactDetails) {
+  const response = await fetch("/api/contact", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(contactDetails),
+  });
+
+  const data = await response.json();
+}
+
 function ContactForm() {
   const [enteredEmail, setEnteredEmail] = useState("");
   const [enteredMessage, setEnteredMessage] = useState("");
   const [enteredName, setEnteredName] = useState("");
 
-  function sendMessageHandler(event) {
+  const [requestStatus, setRequestStatus] = useState(""); // pending, success, error
+  const [requestError, setRequestError] = useState("");
+
+  async function sendMessageHandler(event) {
     event.preventDefault();
-    fetch("/api/contact", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    setRequestStatus("pending");
+    try {
+      await setContactData({
         name: enteredName,
         email: enteredEmail,
         message: enteredMessage,
-      }),
-    }).then((response) => console.log(response));
+      });
+      setRequestStatus("success");
+    } catch (error) {
+      setRequestError(error.message);
+      setRequestStatus("error");
+    }
+  }
+
+  let notification;
+
+  if (requestStatus === "success") {
+    notification = {
+      status: "success",
+      title: "Message sent",
+      message:
+        "Thank you for your message. We will get back to you as soon as possible.",
+    };
+  }
+
+  if (requestStatus === "error") {
+    notification = {
+      status: "error",
+      title: "Error",
+      message: requestError,
+    };
+  }
+
+  if (requestStatus === "pending") {
+    notification = {
+      status: "pending",
+      title: "Sending message",
+      message: "Please wait while we send your message.",
+    };
   }
 
   return (
